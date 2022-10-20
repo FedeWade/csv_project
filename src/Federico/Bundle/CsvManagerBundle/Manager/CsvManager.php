@@ -8,9 +8,14 @@ use Symfony\Component\Serializer\Encoder\CsvEncoder;
 
 class CsvManager
 {
-
+    /**
+     * @var CsvEncoder
+     */
     private CsvEncoder $csvEncoder;
 
+    /**
+     * @param CsvEncoderFactory $csvEncoderFactory
+     */
     public function __construct(CsvEncoderFactory $csvEncoderFactory)
     {
         $this->csvEncoder = $csvEncoderFactory->createCsvEncoder();
