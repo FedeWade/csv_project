@@ -3,19 +3,17 @@
 namespace App\Federico\Bundle\CsvManagerBundle\Manager;
 
 
+use App\Federico\Bundle\CsvManagerBundle\Manager\CsvEncoderFactory\CsvEncoderFactory;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 
 class CsvManager
 {
-    /**
-     * @var CsvEncoder
-     */
+
     private CsvEncoder $csvEncoder;
 
-
-    public function __construct()
+    public function __construct(CsvEncoderFactory $csvEncoderFactory)
     {
-        $this->csvEncoder = new CsvEncoder();
+        $this->csvEncoder = $csvEncoderFactory->createCsvEncoder();
     }
 
     /**
