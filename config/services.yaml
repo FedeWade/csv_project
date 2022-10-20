@@ -20,8 +20,12 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\Federico\Bundle\CsvManagerBundle\Manager\CsvEncoderProvider\CsvEncoderProvider: ~
+    Federico\Bundle\CsvManagerBundle\Manager\CsvEncoderFactory\CsvEncoderFactory: ~
+    Federico\Bundle\CsvManagerBundle\Manager\CsvManager: ~
 
+    Federico\Bundle\CsvManagerBundle\Commands\PrintCsvCommand:
+        tags:
+            - { name: 'console.command', command: 'app:print-csv' }
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

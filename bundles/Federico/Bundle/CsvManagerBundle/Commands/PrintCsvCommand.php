@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Federico\Bundle\CsvManagerBundle\Commands;
+namespace Federico\Bundle\CsvManagerBundle\Commands;
 
-use App\Federico\Bundle\CsvManagerBundle\Manager\CsvManager;
+use Federico\Bundle\CsvManagerBundle\Manager\CsvManager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Federico\Bundle\CsvManagerBundle\Manager\CsvEncoderFactory;
+namespace Federico\Bundle\CsvManagerBundle\Manager\CsvEncoderFactory;
 
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 

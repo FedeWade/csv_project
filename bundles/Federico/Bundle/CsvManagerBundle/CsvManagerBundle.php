@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Federico\Bundle\CsvManagerBundle;
+namespace Federico\Bundle\CsvManagerBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
