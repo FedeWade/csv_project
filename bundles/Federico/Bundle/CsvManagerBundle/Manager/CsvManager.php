@@ -2,7 +2,6 @@
 
 namespace Federico\Bundle\CsvManagerBundle\Manager;
 
-
 use Federico\Bundle\CsvManagerBundle\Manager\CsvEncoderFactory\CsvEncoderFactory;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 
@@ -25,13 +24,13 @@ class CsvManager
      * @param string $path
      * @return array
      */
-    public function getArrayFromCsv(string $path): array
+    public function getArrayFromCsv(string $path): false|array
     {
         if (file_exists($path)) {
             $inputContent = file_get_contents($path);
-            return $this->csvEncoder->decode($inputContent, 'csv', ['csv_key_separator'=> '@']);
+            return $this->csvEncoder->decode($inputContent, 'csv', ['csv_key_separator'=> '^']);
         } else {
-            return array();
+            return false;
         }
     }
 }

@@ -31,11 +31,13 @@
     },
     "autoload": {
         "psr-4": {
+            "Federico\\": "bundles/Federico/",
             "App\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
+            "Federico\\": "bundles/Federico/",
             "App\\Tests\\": "tests/"
         }
     },

@@ -13,19 +13,7 @@ services:
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
 
-    Federico\Bundle\CsvManagerBundle\Manager\CsvEncoderFactory\CsvEncoderFactory: ~
-    Federico\Bundle\CsvManagerBundle\Manager\CsvManager: ~
-
-    Federico\Bundle\CsvManagerBundle\Commands\PrintCsvCommand:
-        tags:
-            - { name: 'console.command', command: 'app:print-csv' }
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
