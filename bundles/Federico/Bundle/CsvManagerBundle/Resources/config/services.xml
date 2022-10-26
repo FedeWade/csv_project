@@ -7,9 +7,8 @@
     <services>
         <defaults autowire="true" autoconfigure="true"/>
 
-        <service id="Federico\Bundle\CsvManagerBundle\Manager\CsvEncoderFactory\CsvEncoderFactory" />
-
         <service id="Federico\Bundle\CsvManagerBundle\Manager\CsvManager" />
+        <service id="Federico\Bundle\CsvManagerBundle\Processor\CsvProcessor" />
 
         <service id="Federico\Bundle\CsvManagerBundle\Commands\PrintCsvCommand" >
             <tag name="console.command" command="app:print-csv"/>

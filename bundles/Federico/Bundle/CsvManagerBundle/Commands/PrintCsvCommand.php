@@ -2,28 +2,28 @@
 
 namespace Federico\Bundle\CsvManagerBundle\Commands;
 
-use Federico\Bundle\CsvManagerBundle\Manager\CsvManager;
+use Federico\Bundle\CsvManagerBundle\Processor\CsvProcessor;
+use Federico\Bundle\CsvManagerBundle\Processor\ProcessorInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
 #[AsCommand(name: 'app:print-csv',description: 'Print Csv file content')]
 class PrintCsvCommand extends Command
 {
     /**
-     * @var CsvManager
+     * @var ProcessorInterface|CsvProcessor
      */
-    private CsvManager $csvManager;
+    private ProcessorInterface $processor;
 
     /**
-     * @param CsvManager $csvManager
+     * @param CsvProcessor $processor
      */
-    public function __construct(CsvManager $csvManager)
+    public function __construct(CsvProcessor $processor)
     {
-        $this->csvManager = $csvManager;
+        $this->processor = $processor;
         parent::__construct();
     }
 
@@ -43,26 +43,8 @@ class PrintCsvCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $csvArray = $this->csvManager->getArrayFromCsv($input->getArgument('path'));
-
-        if(!$csvArray) {
-            $output->writeln("ERROR! No file found in: ".$input->getArgument('path') );
-            return Command::FAILURE;
-        }
-
-        $output->writeln([
-            '',
-            'Printing CSV file:',
-            '======================',
-        ]);
-
-        foreach ($csvArray as $line) {
-            foreach ($line as $value) {
-                $output->write("|  ". $value . "  |");
-            }
-            $output->writeln("");
-        }
-        return Command::SUCCESS;
+        $this->processor->executeCommand($input->getArgument('path'), $output);
+        return 1;
     }
 
 }

@@ -2,22 +2,21 @@
 
 namespace Federico\Bundle\CsvManagerBundle\Manager;
 
-use Federico\Bundle\CsvManagerBundle\Manager\CsvEncoderFactory\CsvEncoderFactory;
-use Symfony\Component\Serializer\Encoder\CsvEncoder;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class CsvManager
 {
     /**
-     * @var CsvEncoder
+     * @var SerializerInterface
      */
-    private CsvEncoder $csvEncoder;
+    private SerializerInterface $serializer;
 
     /**
-     * @param CsvEncoderFactory $csvEncoderFactory
+     * @param SerializerInterface $serializer
      */
-    public function __construct(CsvEncoderFactory $csvEncoderFactory)
+    public function __construct(SerializerInterface $serializer)
     {
-        $this->csvEncoder = $csvEncoderFactory->createCsvEncoder();
+        $this->serializer = $serializer;
     }
 
     /**
@@ -27,8 +26,7 @@ class CsvManager
     public function getArrayFromCsv(string $path): false|array
     {
         if (file_exists($path)) {
-            $inputContent = file_get_contents($path);
-            return $this->csvEncoder->decode($inputContent, 'csv', ['csv_key_separator'=> '^']);
+            return $this->serializer->decode(file_get_contents($path), 'csv');
         } else {
             return false;
         }
