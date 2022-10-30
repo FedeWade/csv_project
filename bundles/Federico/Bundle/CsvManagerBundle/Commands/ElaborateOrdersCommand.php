@@ -2,26 +2,26 @@
 
 namespace Federico\Bundle\CsvManagerBundle\Commands;
 
-use Federico\Bundle\CsvManagerBundle\Processor\CsvProcessor;
-use Federico\Bundle\CsvManagerBundle\Processor\ProcessorInterface;
+use Federico\Bundle\CsvManagerBundle\Processors\ProcessorInterface;
+use Federico\Bundle\CsvManagerBundle\Processors\WebServicesProcessor;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'app:print-csv',description: 'Print Csv file content')]
-class PrintCsvCommand extends Command
+#[AsCommand(name: 'app:elaborate-orders', description: 'Print Csv file content')]
+class ElaborateOrdersCommand extends Command
 {
     /**
-     * @var ProcessorInterface|CsvProcessor
+     * @var ProcessorInterface
      */
     private ProcessorInterface $processor;
 
     /**
-     * @param CsvProcessor $processor
+     * @param WebServicesProcessor $processor
      */
-    public function __construct(CsvProcessor $processor)
+    public function __construct(WebServicesProcessor $processor)
     {
         $this->processor = $processor;
         parent::__construct();
@@ -32,8 +32,8 @@ class PrintCsvCommand extends Command
      */
     protected function configure(): void
     {
-        $this->addArgument('path', InputArgument::REQUIRED, 'Enter the path to the file you want to read');
-        $this->setHelp('This command allows you to print content of Csv file...');
+        $this->addArgument('directoryPath', InputArgument::REQUIRED, 'Enter the path to the folder containing the orders');
+        $this->setHelp('This command allows you to send orders to the correct office...');
     }
 
     /**
@@ -43,8 +43,7 @@ class PrintCsvCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->processor->executeCommand($input->getArgument('path'), $output);
-        return 1;
+        return $this->processor->executeCommand($input->getArgument('directoryPath'), $output);
     }
 
 }

@@ -4,15 +4,81 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <parameters>
+        <parameter key="frigair.csv_options_configuration" type="collection">
+            <parameter key="csv_delimiter">;</parameter>
+            <parameter key="csv_enclosure">"</parameter>
+            <parameter key="csv_end_of_line">\n</parameter>
+            <parameter key="csv_escape_char"></parameter>
+            <parameter key="csv_key_separator">.</parameter>
+            <parameter key="csv_headers" type="collection"></parameter>
+            <parameter key="csv_escape_formulas">false</parameter>
+            <parameter key="as_collection">true</parameter>
+            <parameter key="no_headers">false</parameter>
+            <parameter key="output_utf8_bom">false</parameter>
+        </parameter>
+
+        <parameter key="frigair.repeating_order_data_fields" type="collection">
+            <parameter>Quantity</parameter>
+            <parameter>Type</parameter>
+            <parameter>ItemNo</parameter>
+            <parameter>LineNo</parameter>
+            <parameter>Quantity</parameter>
+            <parameter>UnitPrice</parameter>
+            <parameter>Amount</parameter>
+            <parameter>AmountIncludingVAT</parameter>
+            <parameter>VATPerc</parameter>
+            <parameter>ReturnReasonCode</parameter>
+        </parameter>
+
+        <parameter key="frigair.italy.token_request_body" type="collection">
+            <parameter key="body" type="collection">
+                <parameter key="grant_type">client_credentials</parameter>
+                <parameter key="scope">https://api.businesscentral.dynamics.com/.default</parameter>
+                <parameter key="client_id">ec804bc8-525d-4d14-aeaa-b9f0785ace30</parameter>
+                <parameter key="client_secret">2DU8Q~r3yzn-5kYd2.tl7.eeEYSKU5468325pbYo</parameter>
+            </parameter>
+            <parameter key="headers" type="collection">
+                <parameter key="Content-Type">application/x-www-form-urlencoded</parameter>
+            </parameter>
+        </parameter>
+
+        <parameter key="frigair.italy.token_request_url" >https://login.microsoftonline.com/188a99aa-b5ee-46b5-b98f-fd39f180ae98/oauth2/v2.0/token</parameter>
+        <parameter key="frigair.italy.order_request_url" >https://api.businesscentral.dynamics.com/v2.0/188a99aa-b5ee-46b5-b98f-fd39f180ae98/UAT_SANDBOX/api/CapgeminiSpA/apiFrigAirEommerce/v1.0/companies(625b11b3-96cb-ec11-8e7f-000d3a4b9074)/IF001_orders?$expand=salesOrderLines</parameter>
+
+    </parameters>
+
+
+
+
+
     <services>
         <defaults autowire="true" autoconfigure="true"/>
 
-        <service id="Federico\Bundle\CsvManagerBundle\Manager\CsvManager" />
-        <service id="Federico\Bundle\CsvManagerBundle\Processor\CsvProcessor" />
-
-        <service id="Federico\Bundle\CsvManagerBundle\Commands\PrintCsvCommand" >
-            <tag name="console.command" command="app:print-csv"/>
+        <service id="federico_bundle_csv_manager.processors.web_services_processor" class="Federico\Bundle\CsvManagerBundle\Processors\WebServicesProcessor">
+            <argument key="$csvOptionConfiguration">%frigair.csv_options_configuration%</argument>
         </service>
+        <service id="Federico\Bundle\CsvManagerBundle\Processors\WebServicesProcessor" alias="federico_bundle_csv_manager.processors.web_services_processor"/>
+
+        <service id="Federico\Bundle\CsvManagerBundle\Clients\ClientInterface"/>
+
+        <service id="federico_bundle_csv_manager.clients.italy_client" class="Federico\Bundle\CsvManagerBundle\Clients\ItalyClient">
+            <argument key="$recurringKeys">%frigair.repeating_order_data_fields%</argument>
+            <argument key="$tokenRequestBody">%frigair.italy.token_request_body%</argument>
+            <argument key="$tokenRequestURL">%frigair.italy.token_request_url%</argument>
+            <argument key="$orderRequestURL">%frigair.italy.order_request_url%</argument>
+        </service>
+        <service id="Federico\Bundle\CsvManagerBundle\Clients\ItalyClient" alias="federico_bundle_csv_manager.clients.italy_client"/>
+
+
+        <service id="Federico\Bundle\CsvManagerBundle\Clients\SpainClient" />
+        <service id="Federico\Bundle\CsvManagerBundle\Clients\GermanyClient" />
+
+
+        <service id="Federico\Bundle\CsvManagerBundle\Commands\ElaborateOrdersCommand">
+            <tag name="console.command" command="app:elaborate-orders"/>
+        </service>
+
 
     </services>
 </container>
