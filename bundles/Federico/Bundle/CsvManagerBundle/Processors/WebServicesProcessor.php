@@ -14,6 +14,7 @@ class WebServicesProcessor implements ProcessorInterface
 
     private ClientInterface $italyClient;
     private ClientInterface $germanyClient;
+    private ClientInterface $spainClient;
 
     private SerializerInterface $serializer;
 
@@ -23,11 +24,12 @@ class WebServicesProcessor implements ProcessorInterface
      * @param SerializerInterface $serializer
      * @param ItalyClient $client
      */
-    public function __construct($csvOptionConfiguration, SerializerInterface $serializer, ItalyClient $italyClient, GermanyClient $germanyClient)
+    public function __construct($csvOptionConfiguration, SerializerInterface $serializer, ItalyClient $italyClient, GermanyClient $germanyClient, SpainClient $spainClient)
     {
         $this->csvOptionConfiguration = $csvOptionConfiguration;
         $this->italyClient = $italyClient;
         $this->germanyClient = $germanyClient;
+        $this->spainClient = $spainClient;
         $this->serializer = $serializer;
     }
 
@@ -44,12 +46,15 @@ class WebServicesProcessor implements ProcessorInterface
             return 1; //command failed
         }
 
+
         foreach ($filesInFolder as $filePath) {
             $orderArray = $this->serializer->decode(file_get_contents($filePath), 'csv', $this->csvOptionConfiguration);
             if ($orderArray[0]["ReferenceOffice"]== "Italy")
                 $this->italyClient->sendOrderRequest($orderArray);
             if ($orderArray[0]["ReferenceOffice"]== "Germany")
                 $this->germanyClient->sendOrderRequest($orderArray);
+            //if ($orderArray[0]["ReferenceOffice"]== "Spain")
+                //$this->spainClient->sendOrderRequest($orderArray);
         }
 
         return 0; //command success
