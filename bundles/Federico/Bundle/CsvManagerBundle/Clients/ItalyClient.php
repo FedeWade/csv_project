@@ -2,7 +2,6 @@
 
 namespace Federico\Bundle\CsvManagerBundle\Clients;
 
-use MongoDB\Driver\Exception\ServerException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -11,8 +10,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ItalyClient implements ClientInterface
 {
-    private array $recurringKeys;
-    private array $integerKeys;
+    private array $floatKeys;
     private array $tokenRequestBody;
     private string $tokenRequestURL;
     private string $orderRequestURL;
@@ -20,14 +18,12 @@ class ItalyClient implements ClientInterface
     private HttpClientInterface $client;
 
     /**
-     * @param $recurringKeys
      * @param $tokenRequestBody
      * @param HttpClientInterface $client
      */
-    public function __construct($recurringKeys, $tokenRequestBody, $orderRequestURL, $tokenRequestURL, HttpClientInterface $client)
+    public function __construct($floatKeys, $tokenRequestBody, $orderRequestURL, $tokenRequestURL, HttpClientInterface $client)
     {
-        $this->recurringKeys = $recurringKeys;
-        $this->integerKeys = ["AmountIncludingVAT", "Quantity", "UnitPrice", "Amount", "VATPerc"];
+        $this->floatKeys = $floatKeys;
         $this->tokenRequestBody = $tokenRequestBody;
         $this->tokenRequestURL = $tokenRequestURL;
         $this->orderRequestURL = $orderRequestURL;
@@ -53,6 +49,7 @@ class ItalyClient implements ClientInterface
                     'Content-Type' => 'application/json'
                 ]]
         );
+
         try {
             $response = $this->client->request('POST', $this->orderRequestURL);
             $response->getContent();
@@ -71,34 +68,19 @@ class ItalyClient implements ClientInterface
     public function generateJsonPayload($orderArray): string
     {
         $payload = $orderArray[0];
-        $payload =array_splice($payload,0, -9);
+        unset($payload["ReferenceOffice"]);
+        $payload =array_splice($payload,0, -8);
 
-        var_dump($payload);
-        /*
-        $firstLine = $orderArray[0];
-
-
-        $payload = array();
-        foreach ($firstLine as $key => $value) {
-            if ($key == 'ReferenceOffice') continue;
-            if ($key == "LineNo") break;
-            $payload[$key] = $value;
+        foreach ($orderArray as &$row) {
+            array_splice($row, 0, -9 );
         }
 
-        foreach ($orderArray as $line) {
-            $orderLine = array();
-            foreach ($line as $key => $value) {
-                if (in_array($key, $this->integerKeys))
-                    $orderLine[$key] = (int)$value;
-                elseif (in_array($key, $this->recurringKeys)) {
-                    $orderLine[$key] = $value;
-                }
-            }
-            $SalesOrderLines[] = $orderLine;
-        }
-        $payload["salesOrderLines"] = $SalesOrderLines;
-        $payload['AmountIncludingVAT'] = (int)$payload['AmountIncludingVAT'];
-*/
+        array_walk_recursive($orderArray, function(&$value, $key) {
+            if (in_array($key, $this->floatKeys))
+                $value = (float)$value;
+        });
+        $payload["salesOrderLines"] =$orderArray;
+        $payload['AmountIncludingVAT'] = (float)$payload['AmountIncludingVAT'];
         return json_encode($payload);
     }
 

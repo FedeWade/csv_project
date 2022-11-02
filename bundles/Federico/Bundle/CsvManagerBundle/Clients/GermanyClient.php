@@ -15,16 +15,26 @@ class GermanyClient implements ClientInterface
 
     private string $bodyNamespace;
 
+    /**
+     * @param $wsdlPath
+     * @param $testCredentials
+     * @param $headerNamespace
+     * @param $bodyNamespace
+     * @throws \SoapFault
+     */
     public function __construct($wsdlPath, $testCredentials, $headerNamespace, $bodyNamespace)
     {
-        $this->client = new \SoapClient($wsdlPath, array('trace' => 1, 'soap_version' => SOAP_1_1));
+        $this->client = new \SoapClient($wsdlPath, array('trace' => 1));
         $this->testCredentials= $testCredentials;
         $this->headerNamespace = $headerNamespace;
         $this->bodyNamespace = $bodyNamespace;
     }
 
-
-    public function sendOrderRequest(array $orderArray)
+    /**
+     * @param array $orderArray
+     * @return void
+     */
+    public function sendOrderRequest(array $orderArray): void
     {
         $header = (object)array(
             'DatasourceID' => $this->testCredentials['test_data_source_id'],
@@ -36,19 +46,23 @@ class GermanyClient implements ClientInterface
         $this->client->__setSoapHeaders($header);
 
         $params = $this->generatePayload($orderArray);
-
         try {
-            $this->client->CreateSalesOrder(['request' => $params]);
+            $response = $this->client->CreateSalesOrder($params);
             echo PHP_EOL." - Request to Germany client SUCCESS.". PHP_EOL;
+            var_dump($response);
         } catch (Exception $e) {
             echo $e->getMessage() . PHP_EOL;
             echo "REQUEST failed germany client:\n" . $this->client->__getLastRequest() . "\n";
+            //echo $response['error']['message'];
         }
     }
 
-    public function generatePayload($orderArray): \SoapVar
+    /**
+     * @param $orderArray
+     * @return \SoapVar
+     */
+    public function generatePayload($orderArray): array
     {
-
         $params = new \stdClass();
         $params->Email = $this->testCredentials['test_email'];
         $params->Password = $this->testCredentials['test_email_password'];
@@ -78,6 +92,7 @@ class GermanyClient implements ClientInterface
         $params->Reference = 'Frig Air Deutschland GmbH';
         $params->ReferenceNumber = '10001';
 
-        return new \SoapVar($params, SOAP_ENC_OBJECT, 'OrderRequest', $this->bodyNamespace, 'request', $this->bodyNamespace);
+        $params= new \SoapVar($params, SOAP_ENC_OBJECT, 'OrderRequest', $this->bodyNamespace, 'request', $this->bodyNamespace);
+        return ['request' => $params];
     }
 }

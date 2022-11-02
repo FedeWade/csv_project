@@ -18,16 +18,12 @@
             <parameter key="output_utf8_bom">false</parameter>
         </parameter>
 
-        <parameter key="frigair.repeating_order_data_fields" type="collection">
-            <parameter>Quantity</parameter>
-            <parameter>Type</parameter>
-            <parameter>ItemNo</parameter>
-            <parameter>LineNo</parameter>
+        <parameter key="frigair.float_order_data_fields" type="collection">
+            <parameter>AmountIncludingVAT</parameter>
             <parameter>Quantity</parameter>
             <parameter>UnitPrice</parameter>
             <parameter>Amount</parameter>
             <parameter>VATPerc</parameter>
-            <parameter>ReturnReasonCode</parameter>
         </parameter>
 
         <parameter key="frigair.italy.token_request_body" type="collection">
@@ -61,7 +57,12 @@
 
         <parameter key="frigair.spain.wsdl_location_path">C:\Users\federico.ballarin\Desktop\project_utils\wasdl_spain.wsdl</parameter>
 
+        <parameter key="frigair.france.wsdl_location_path">http://interact.teccom-eu.net/openmessaging.asmx?WSDL</parameter>
+
     </parameters>
+
+
+
 
 
     <services>
@@ -78,7 +79,7 @@
 
         <service id="federico_bundle_csv_manager.clients.italy_client"
                  class="Federico\Bundle\CsvManagerBundle\Clients\ItalyClient">
-            <argument key="$recurringKeys">%frigair.repeating_order_data_fields%</argument>
+            <argument key="$floatKeys">%frigair.float_order_data_fields%</argument>
             <argument key="$tokenRequestBody">%frigair.italy.token_request_body%</argument>
             <argument key="$tokenRequestURL">%frigair.italy.token_request_url%</argument>
             <argument key="$orderRequestURL">%frigair.italy.order_request_url%</argument>
@@ -103,6 +104,14 @@
         </service>
         <service id="Federico\Bundle\CsvManagerBundle\Clients\SpainClient"
                  alias="federico_bundle_csv_manager.clients.spain_client"/>
+
+        <service id="federico_bundle_csv_manager.clients.france_client" class="Federico\Bundle\CsvManagerBundle\Clients\FranceClient">
+            <argument key="$wsdlPath">%frigair.france.wsdl_location_path%</argument>
+
+
+        </service>
+        <service id="Federico\Bundle\CsvManagerBundle\Clients\FranceClient"
+                 alias="federico_bundle_csv_manager.clients.france_client"/>
 
         <service id="Federico\Bundle\CsvManagerBundle\Commands\ElaborateOrdersCommand">
             <tag name="console.command" command="app:elaborate-orders"/>
